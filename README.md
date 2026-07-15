@@ -2,7 +2,7 @@
 
 An interactive, single-file map of where risk concentrates in the Australian financial system, how stress could travel through it in a crisis, and — just as importantly — what regulators can and cannot currently see.
 
-**22 sectors and markets · 39 documented linkages · 4 step-through stress scenarios · a "what we can and can't see" data-visibility overlay**
+**22 sectors and markets · 39 documented linkages · 4 step-through stress scenarios · "what we can and can't see" and "stabiliser or amplifier" overlays**
 
 Every node and connection opens an evidence panel with key figures, a data-visibility rating, an explanation of how stress travels through that channel, and links to the underlying primary sources.
 
@@ -10,7 +10,7 @@ Every node and connection opens an evidence panel with key figures, a data-visib
 
 The map is a layered flow diagram: offshore vectors at the top, asset owners and lenders in the middle tiers, markets and infrastructure below them, and the real economy at the bottom. Arrowheads show the primary direction stress flows.
 
-Three ways in: step through the **stress scenarios** in the top bar (global risk-off, private credit defaults, cyber/operational, China/trade), toggle **"What we can & can't see"** to recolour everything by how well it is actually measured, or simply **click any line** — start with superannuation → banks, the single most important domestic linkage the RBA identifies.
+Four ways in: step through the **stress scenarios** in the top bar (global risk-off, private credit defaults, cyber/operational, China/trade), toggle **"What we can & can't see"** to recolour everything by how well it is actually measured, flip **"Stabiliser or amplifier?"** to see which way each linkage cuts in a crisis, or simply **click any line** — start with superannuation → banks, the single most important domestic linkage the RBA identifies.
 
 ## Hosting on GitHub Pages
 

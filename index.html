@@ -50,10 +50,18 @@ button.scen.on{background:var(--text); border-color:var(--text); color:#fff;}
 .chip.dq1{border-color:var(--green); color:var(--green);}
 .chip.dq2{border-color:var(--amber); color:var(--amber);}
 .chip.dq3{border-color:var(--red); color:var(--red);}
+.chip.amp-stab{border-color:#128A5A; color:#128A5A;}
+.chip.amp-cond{border-color:#C98A00; color:#C98A00;}
+.chip.amp-amp{border-color:#E8474B; color:#E8474B;}
+.chip.amp-expo{border-color:#6E8A86; color:#6E8A86;}
 .dqnote{font-size:11.5px; border-left:3px solid var(--faint); padding:6px 10px; background:var(--panel); border-radius:0 6px 6px 0; color:var(--muted); margin:8px 0; line-height:1.5;}
 .dqnote.dq1{border-left-color:var(--green);}
 .dqnote.dq2{border-left-color:var(--amber);}
 .dqnote.dq3{border-left-color:var(--red);}
+.dqnote.amp-stab{border-left-color:#128A5A;}
+.dqnote.amp-cond{border-left-color:#C98A00;}
+.dqnote.amp-amp{border-left-color:#E8474B;}
+.dqnote.amp-expo{border-left-color:#6E8A86;}
 .conn{display:block; font-size:11.5px; padding:5px 8px; margin-bottom:4px; background:#fff; border:1px solid var(--line); border-radius:6px; cursor:pointer; color:#28494A;}
 .conn:hover{border-color:var(--muted);}
 .conn .arr{color:var(--muted); font-size:10px;}
@@ -111,6 +119,7 @@ svg text{font-family:"Segoe UI",system-ui,sans-serif; user-select:none;}
   <div class="controls">
     <div class="grp"><span class="lbl">Overlay</span>
       <button id="dq-btn">What we can &amp; can't see</button>
+      <button id="amp-btn">Stabiliser or amplifier?</button>
     </div>
     <div class="grp"><span class="lbl">Stress scenarios</span>
       <button class="scen" data-s="s1">Global risk-off</button>
@@ -177,7 +186,8 @@ const GLOSSARY = {
  dq: 1 = well measured, 2 = partially visible, 3 = poorly visible
 */
 const NODES = [
-{id:"global-funding", label:"Global funding & FX markets", size:"Offshore wholesale debt & hedging", tier:"off", x:130, y:70,
+{id:"global-funding", label:"Global funding & FX markets", size:"Wholesale debt & FX hedging", tier:"off", x:130, y:70,
+ amp:{k:"cond", note:"Neither friend nor foe — but access is procyclical: cheapest when least needed, dearest in stress."},
  desc:"The offshore wholesale markets where Australian banks and large corporates raise debt, and where FX hedges are struck. Australia runs on imported capital less than it used to, but the dependence has not gone away.",
  facts:[
   "Australian banks source just over <b>10% of debt funding offshore</b> (down from ~25% in 2007); ~45% of that is short-term, but offshore bonds have a weighted average remaining maturity over 4 years.",
@@ -187,7 +197,8 @@ const NODES = [
  dq:{l:1, note:"Bank funding composition is well measured (APRA/RBA data). The behaviour of offshore investors in stress is the uncertain part."},
  src:[["RBA FSR Oct 2025 — Focus Topic 4.1: How Overseas Shocks Can Affect Financial Stability","https://www.rba.gov.au/publications/fsr/2025/oct/focus-topic-how-overseas-shocks-can-affect-financial-stability-in-australia.html"],["RBA Bulletin (2019): The Nature of Australian Banks' Offshore Funding","https://www.rba.gov.au/publications/bulletin/2019/dec/the-nature-of-australian-banks-offshore-funding.html"],["RBA FSR Mar 2026 — Ch 3","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
-{id:"global-assets", label:"Global asset markets", size:"Equities, credit & sovereign debt", tier:"off", x:360, y:70,
+{id:"global-assets", label:"Global asset markets", size:"Equities, credit, sovereigns", tier:"off", x:360, y:70,
+ amp:{k:"amp", note:"Concentrated, richly priced markets are where disorderly repricing starts; leverage inside global NBFIs amplifies it."},
  desc:"The global equity, credit and sovereign bond markets where Australian institutions — above all super funds — invest, and where the RBA sees some of the biggest current vulnerabilities.",
  facts:[
   "RBA (March 2026): a large and growing stock of <b>advanced-economy sovereign debt</b> could reprice in a disorderly way, spilling into Australian bond markets.",
@@ -198,6 +209,7 @@ const NODES = [
  src:[["RBA FSR Mar 2026 — Financial Stability Assessment","https://www.rba.gov.au/publications/fsr/2026/mar/financial-stability-assessment.html"],["RBA FSR Oct 2025 — Ch 3 (Box: April market volatility)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"global-nbfi", label:"Global private credit & NBFIs", size:"Opaque global lender complex", tier:"off", x:590, y:70,
+ amp:{k:"amp", note:"Leverage, opacity and redemption mismatch: the textbook amplification profile (the FSB’s core warning)."},
  desc:"The global non-bank lending complex — private credit funds, credit funds and other leveraged NBFIs offshore. It links to Australia through bank lending exposures and through super funds' offshore private-market allocations.",
  facts:[
   "RBA-commissioned analysis (reported March 2026) put Australian banks' exposure to <b>local private credit funds at up to ~$12bn</b>; adding offshore non-bank lending exposures lifts the figure to <b>~$162bn — about 3% of Australian bank assets</b>.",
@@ -207,7 +219,8 @@ const NODES = [
  dq:{l:3, note:"One of the weakest data areas globally. Cross-border exposures rest on estimates; fund-level leverage and valuation practice are largely invisible to Australian regulators."},
  src:[["FSB (May 2026): Report on Vulnerabilities in Private Credit","https://www.fsb.org/2026/05/fsb-warns-on-private-credit-vulnerabilities/"],["MPA summary of RBA-commissioned exposure estimates (Mar 2026)","https://www.mpamag.com/au/specialty/alternative-lending/rba-worries-default-risk-rising-in-private-credit-but-industry-welcomes-scrutiny/582102"],["RBA Bulletin (Oct 2024): Growth in Global Private Credit","https://www.rba.gov.au/publications/bulletin/2024/oct/growth-in-global-private-credit.html"]]},
 
-{id:"china-trade", label:"China & trading partners", size:">60% of goods exports = mining", tier:"off", x:820, y:70,
+{id:"china-trade", label:"China & trading partners", size:"Mining >60% of exports", tier:"off", x:820, y:70,
+ amp:{k:"expo", note:"A shock source and conduit for Australia rather than an amplifier within its financial system."},
  desc:"Australia's trade exposure — dominated by resource exports to China and Asia — plus longstanding vulnerabilities inside the Chinese financial system itself.",
  facts:[
   "RBA (March 2026): vulnerabilities across <b>Chinese banks, non-banks and local governments</b> have been exacerbated by ongoing real-estate weakness; corporate debt has risen sharply as a share of GDP.",
@@ -217,7 +230,8 @@ const NODES = [
  dq:{l:2, note:"Australian trade and bank exposures are well measured. Conditions inside China's financial system are the opaque part — assessed largely from outside."},
  src:[["RBA FSR Mar 2026 — Ch 1: Global Macro-financial Environment","https://www.rba.gov.au/publications/fsr/2026/mar/the-global-macro-financial-environment.html"],["RBA FSR Oct 2025 — Focus Topic 4.1 (trade channel)","https://www.rba.gov.au/publications/fsr/2025/oct/focus-topic-how-overseas-shocks-can-affect-financial-stability-in-australia.html"]]},
 
-{id:"offshore-providers", label:"Offshore service providers", size:"Cloud, tech & market services", tier:"off", x:1050, y:70,
+{id:"offshore-providers", label:"Offshore service providers", size:"Cloud, tech & services", tier:"off", x:1050, y:70,
+ amp:{k:"amp", note:"Shared critical dependencies convert one failure into many institutions’ problem simultaneously."},
  desc:"The cloud, technology, custody, administration and market-data providers — many offshore, outside the Australian regulatory perimeter — on which banks, super funds and market infrastructure critically depend.",
  facts:[
   "The largest regulated entities each rely on <b>~150 material service providers</b> for critical operations; many serve multiple institutions, some the whole industry (RBA, March 2026).",
@@ -227,17 +241,20 @@ const NODES = [
  dq:{l:3, note:"A recognised blind spot. Concentration is known to exist but system-wide dependency mapping is only now being assembled via CPS 230 reporting."},
  src:[["RBA FSR Mar 2026 — Ch 3 (operational risk)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"],["RBA FSR Oct 2025 — Focus Topic 4.1 (infrastructure channel)","https://www.rba.gov.au/publications/fsr/2025/oct/focus-topic-how-overseas-shocks-can-affect-financial-stability-in-australia.html"]]},
 
-{id:"hedge-funds", label:"Hedge funds", size:"Leveraged traders in AGS & FX", tier:"inv", x:130, y:215,
+{id:"hedge-funds", label:"Hedge funds", size:"Leveraged AGS & FX traders", tier:"inv", x:130, y:215,
+ amp:{k:"amp", note:"Liquidity providers in calm, consumers in stress — leveraged, fast and commonly positioned (LTCM 1998; April 2025 in miniature)."},
  desc:"Domestic and (mostly) foreign hedge funds active in Australian government bond and FX markets. They add turnover and diversity in calm times — and rapid, leveraged unwinds in stress.",
  facts:[
   "Hedge funds are <b>active in AGS markets</b>, diversifying the investor base and lifting turnover (RBA, Oct 2025).",
   "They hold <b>leveraged positions, trade actively, and may have low tolerance for absorbing losses</b> — forced unwinds could impair market functioning.",
   "April 2025 showed the mechanism: a rush to unwind common positions sharply reduced AGS liquidity, though less severely than March 2020.",
-  "Their leverage is provided largely by global banks via prime brokerage — an offshore dependency."],
+  "Their leverage is provided largely by global banks via prime brokerage — an offshore dependency.",
+  "<b>The LTCM question (1998)</b>: a single leveraged fund’s collapse nearly toppled its bank counterparties. In Australia that direct counterparty channel is thin — local banks run little prime brokerage — so transmission runs through market functioning and global dealer banks instead. A judgement that rests on partial data."],
  dq:{l:3, note:"Hedge fund positioning and leverage in AUD markets is one of the acknowledged gaps — regulators infer it from market data and partial offshore reporting rather than direct collection."},
  src:[["RBA FSR Oct 2025 — Ch 3 (Box: Interconnections)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"managed-funds", label:"Managed funds & asset managers", size:"Run much of super's money", tier:"inv", x:360, y:215,
+ amp:{k:"cond", note:"Buy-and-hold stabilises; redemption-driven selling amplifies."},
  desc:"The asset management layer that invests a significant share of superannuation money and other savings, concentrating ownership of domestic securities alongside super funds.",
  facts:[
   "Managed funds <b>manage a significant share of super funds' investments</b> — so 'super selling' often shows up in markets as managed-fund selling.",
@@ -248,6 +265,7 @@ const NODES = [
  src:[["RBA FSR Oct 2025 — Ch 3 (Box: Interconnections)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"super", label:"Superannuation (APRA-regulated)", size:"$4.5tn · ~160% of GDP", tier:"inv", x:590, y:215,
+ amp:{k:"cond", note:"The RBA’s judgement: historically a stabiliser — long-horizon, unleveraged, defined-contribution. Its future scale is what could make its own liquidity management market-moving in a severe event."},
  desc:"The gravitational centre of the system's future: $4.5 trillion and still compounding, one-third of all financial system assets. Historically a stabiliser; now large enough that its own liquidity management can move markets.",
  facts:[
   "<b>$4.5tn</b> (Dec 2025), ~<b>160% of GDP</b>, about <b>one-third of financial system assets</b>; growth expected to continue into the 2050s. Compulsory contributions are 12% of wages since July 2025.",
@@ -260,6 +278,7 @@ const NODES = [
  src:[["RBA FSR Mar 2026 — Ch 3 (superannuation)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"],["RBA FSR Oct 2025 — Focus Topic 4.1","https://www.rba.gov.au/publications/fsr/2025/oct/focus-topic-how-overseas-shocks-can-affect-financial-stability-in-australia.html"],["RBA Deputy Governor Hauser (Sep 2025) on FX hedging","https://www.rba.gov.au/speeches/2025/sp-dg-2025-09-16.html"]]},
 
 {id:"smsf", label:"SMSFs & retail investors", size:"~⅓ of super assets", tier:"inv", x:820, y:215,
+ amp:{k:"expo", note:"A destination for losses rather than a propagation engine — no leverage or run mechanics, but no protection either."},
  desc:"Self-managed super funds and retail/'sophisticated' investors — roughly the third of super assets outside APRA's prudential net, and a growing buyer of higher-yield private credit product.",
  facts:[
   "Around <b>one-third of super assets sit outside APRA-regulated funds</b>, mostly in SMSFs — no prudential supervision of their investment choices.",
@@ -269,7 +288,8 @@ const NODES = [
  dq:{l:3, note:"SMSF asset allocation is reported only coarsely and with a lag; exposure to private credit and unlisted property through trusts and funds is genuinely hard to measure."},
  src:[["ASIC REP 814: Private Credit in Australia (Sep 2025)","https://asic.gov.au/regulatory-resources/find-a-document/reports/rep-814-private-credit-in-australia/"]]},
 
-{id:"insurers", label:"General insurers & LMI", size:"Small sector, big protection role", tier:"inv", x:1050, y:215,
+{id:"insurers", label:"General insurers & LMI", size:"Small sector, big role", tier:"inv", x:1050, y:215,
+ amp:{k:"cond", note:"A stabiliser whose quiet erosion (underinsurance) shifts risk back onto households and bank collateral."},
  desc:"General insurers (including lenders mortgage insurers) are small as a share of system assets but underpin the collateral quality of the mortgage system and household resilience.",
  facts:[
   "Well capitalised and profitable; capital ratios well above APRA's prescribed amount (Dec 2025). Extreme weather cost ~$3.5bn in claims in 2025.",
@@ -279,7 +299,8 @@ const NODES = [
  dq:{l:2, note:"Insurer balance sheets are well supervised. The gap is on the other side: nobody reliably observes which mortgaged homes have lapsed or inadequate insurance."},
  src:[["RBA FSR Mar 2026 — Ch 3 (insurance)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"],["RBA FSR Oct 2025 — Ch 3 (underinsurance)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
-{id:"rba", label:"RBA liquidity backstop", size:"OMO full allotment · standing facility", tier:"lend", x:130, y:360,
+{id:"rba", label:"RBA liquidity backstop", size:"OMO full allotment backstop", tier:"lend", x:130, y:360,
+ amp:{k:"stab", note:"The system’s designed circuit-breaker."},
  desc:"The system's shock absorber. Under 'ample reserves with full allotment', banks can borrow unlimited ES balances against eligible collateral at weekly OMO — designed to forestall fire sales before they start.",
  facts:[
   "Weekly OMO with <b>full allotment</b>: eligible counterparties can borrow as much settlement cash as they want against eligible collateral.",
@@ -290,6 +311,7 @@ const NODES = [
  src:[["Joint APRA-RBA Statement on the Overnight Standing Facility (Apr 2025)","https://www.rba.gov.au/media-releases/2025/mr-25-11.html"],["RBA FSR Mar 2026 — Ch 3 (liquidity)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"mlh-banks", label:"Smaller banks (MLH)", size:"Hold bank paper as liquidity", tier:"lend", x:360, y:360,
+ amp:{k:"amp", note:"Bank paper held as ‘liquidity’ is a built-in contagion loop — recognised and being worked down."},
  desc:"Smaller banks under the simpler MLH liquidity regime. Their quirk: they hold other banks' debt securities as 'liquid assets' — so one bank's fire sale marks down every other bank's liquidity buffer.",
  facts:[
   "MLH banks historically held <b>concentrated positions in bank debt securities</b> as liquid assets; selling in stress would mark down the same securities held by peers — a built-in contagion loop.",
@@ -299,7 +321,8 @@ const NODES = [
  dq:{l:1, note:"Well measured and actively supervised — this is a known vulnerability being deliberately worked down."},
  src:[["RBA FSR Oct 2025 — Ch 3 (liquidity & MLH)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"],["RBA FSR Mar 2026 — Ch 3","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
-{id:"major-banks", label:"Banks", size:"42% of system assets · CET1 12.3%", tier:"lend", x:590, y:360,
+{id:"major-banks", label:"Banks", size:"42% of system · CET1 12.3%", tier:"lend", x:590, y:360,
+ amp:{k:"cond", note:"Capital, provisioning and collateral make banks shock absorbers up to a point; beyond it, credit tightening transmits stress to everyone they lend to."},
  desc:"The core of the system: about 42% of the ~$14 trillion in Australian financial assets, dominated by four major banks, with balance sheets concentrated in domestic housing.",
  facts:[
   "<b>CET1 ratio 12.3%</b> (Dec 2025), well above requirements; provisioning near pre-pandemic levels; loan losses low by history.",
@@ -311,7 +334,8 @@ const NODES = [
  dq:{l:1, note:"The best-measured part of the system — APRA prudential data, IRB models, disclosure. Residual uncertainty sits in collateral values under severe stress and in indirect NBFI exposures."},
  src:[["RBA FSR Mar 2026 — Ch 3 (banks)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"],["RBA FSR Mar 2026 — Ch 2 (5% Deposit Scheme, high-LVR lending)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-australian-households-and-businesses.html"]]},
 
-{id:"private-credit", label:"Private credit funds", size:"~$200bn · ~half real-estate linked", tier:"lend", x:820, y:360,
+{id:"private-credit", label:"Private credit funds", size:"~$200bn · half real estate", tier:"lend", x:820, y:360,
+ amp:{k:"amp", note:"Opacity plus concentrated property books plus gated redemptions: losses surface late, then all at once."},
  desc:"The fastest-growing and least visible lender class: managed funds making direct loans, roughly half secured by or invested in real estate — heavily construction and development. The RBA expects defaults to keep rising through 2026.",
  facts:[
   "Size estimates range from <b>~$40bn</b> (RBA's narrow business-lending measure, 2024) to <b>~$200bn+</b> (EY estimate cited by ASIC, 2025) — the range itself is the data-gap story. Under 2% of financial system assets.",
@@ -323,7 +347,8 @@ const NODES = [
  dq:{l:3, note:"The canonical data gap in the Australian system: no comprehensive reporting of size, leverage, valuations or arrears. Regulators rely on estimates, surveys and liaison."},
  src:[["ASIC REP 814: Private Credit in Australia (Sep 2025)","https://asic.gov.au/regulatory-resources/find-a-document/reports/rep-814-private-credit-in-australia/"],["ASIC REP 820: Progress Update (Nov 2025)","https://download.asic.gov.au/media/q42bgduw/rep820-published-5-november-2025.pdf"],["RBA FSR Mar 2026 — Ch 3 (non-banks)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"],["FSB (May 2026): Vulnerabilities in Private Credit","https://www.fsb.org/2026/05/fsb-warns-on-private-credit-vulnerabilities/"]]},
 
-{id:"nonbank-lenders", label:"Other non-bank lenders", size:"Non-banks ≈ 6% of system assets", tier:"lend", x:1050, y:360,
+{id:"nonbank-lenders", label:"Other non-bank lenders", size:"Non-banks ≈ 6% of system", tier:"lend", x:1050, y:360,
+ amp:{k:"expo", note:"A small conduit; securitisation funding is the fragile link, not amplification."},
  desc:"Registered financial corporations and securitisation-funded lenders writing mortgages and business loans outside the banking perimeter — growing faster than banks, from a small base.",
  facts:[
   "Non-bank lenders account for about <b>6% of financial system assets</b> — growth is strong but systemic importance is limited by size (RBA, March 2026).",
@@ -334,6 +359,7 @@ const NODES = [
  src:[["RBA FSR Mar 2026 — Ch 3 (non-banks)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"],["RBA FSR Oct 2025 — Ch 3","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"payments", label:"Payments infrastructure", size:"RITS · NPP · BECS", tier:"mkt", x:210, y:505,
+ amp:{k:"cond", note:"Pure infrastructure: invisible while working, an instant system-wide amplifier when not."},
  desc:"The settlement plumbing: the RBA-operated RITS at the core, the New Payments Platform, and the ageing BECS bulk clearing system now being decommissioned.",
  facts:[
   "A payments outage can force institutions awaiting funds to <b>liquidate assets to meet obligations</b> — an operational event becoming a liquidity event (RBA, March 2026).",
@@ -344,6 +370,7 @@ const NODES = [
  src:[["RBA FSR Mar 2026 — Ch 3 (FMIs & Box on operational resilience)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"ags-market", label:"AGS & semi-gov bond markets", size:"System collateral bedrock", tier:"mkt", x:470, y:505,
+ amp:{k:"cond", note:"The safe asset is the system’s shock absorber — until a sovereign repricing turns the anchor into the source."},
  desc:"Commonwealth and state government bond markets: the collateral and liquid-asset bedrock of the entire system, and the meeting point of banks, super, hedge funds and foreign investors.",
  facts:[
   "AGS and semis form <b>the bulk of banks' HQLA</b> and underpin collateralised lending markets.",
@@ -353,7 +380,8 @@ const NODES = [
  dq:{l:2, note:"Issuance and bank holdings are well measured; hedge fund and offshore positioning in AGS is inferred rather than observed."},
  src:[["RBA FSR Oct 2025 — Ch 3 (Box: Interconnections)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"],["RBA FSR Mar 2026 — Financial Stability Assessment","https://www.rba.gov.au/publications/fsr/2026/mar/financial-stability-assessment.html"]]},
 
-{id:"dom-markets", label:"Domestic equity & credit markets", size:"Bank bills · bonds · listed equities", tier:"mkt", x:730, y:505,
+{id:"dom-markets", label:"Domestic equity & credit markets", size:"Bills · bonds · equities", tier:"mkt", x:730, y:505,
+ amp:{k:"cond", note:"Deep markets absorb; concentrated ownership means synchronised selling can overwhelm."},
  desc:"The domestic securities markets — bank bills, bank and corporate bonds, listed equities — where the big institutions' portfolios overlap. Common exposures here are the main indirect contagion channel.",
  facts:[
   "<b>Bank bill ownership is concentrated in super and managed funds</b>: simultaneous redemption would spike BBSW and cut short-term bank funding — as at the onset of COVID-19.",
@@ -363,7 +391,8 @@ const NODES = [
  dq:{l:1, note:"Ownership shares are reasonably well captured in ABS financial accounts; behaviour under joint stress is the modelled (not measured) part — hence APRA's system stress test."},
  src:[["RBA FSR Oct 2025 — Ch 3 (Box: Interconnections)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
-{id:"asx", label:"ASX clearing & settlement", size:"CHESS · central counterparties", tier:"mkt", x:990, y:505,
+{id:"asx", label:"ASX clearing & settlement", size:"CHESS & central clearing", tier:"mkt", x:990, y:505,
+ amp:{k:"amp", note:"CCPs concentrate risk by design; margin is procyclical; outages freeze settlement."},
  desc:"The near-monopoly clearing and settlement infrastructure for Australian equities (and key derivatives), under formal regulatory intervention after repeated operational failures.",
  facts:[
   "ASIC Inquiry interim findings (late 2025): resilience of critical infrastructure <b>compromised to deliver shareholder returns</b>; governance failures; ASX 'lacks the aspiration to be a steward of critical market infrastructure'.",
@@ -373,7 +402,8 @@ const NODES = [
  dq:{l:2, note:"Heavily scrutinised now — but the Inquiry itself found regulators lacked adequate visibility and traction for years; technology-debt risk remains hard to quantify."},
  src:[["RBA FSR Mar 2026 — Ch 3 (ASX Inquiry)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"],["RBA FSR Oct 2025 — Ch 3 (FMIs)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
-{id:"households", label:"Households", size:"Mortgages · super balances · deposits", tier:"real", x:300, y:650,
+{id:"households", label:"Households", size:"Mortgages · super · deposits", tier:"real", x:300, y:650,
+ amp:{k:"cond", note:"Buffers absorb income shocks; high debt amplifies severe, sustained ones."},
  desc:"Australian households: among the most indebted in the advanced world, with wealth concentrated in housing and super. Their resilience is the first line of defence for the banking system.",
  facts:[
   "RBA (March 2026): most mortgage borrowers are in a <b>solid financial position</b> with buffers; households and businesses are 'unlikely to be a source of systemic instability'.",
@@ -384,6 +414,7 @@ const NODES = [
  src:[["RBA FSR Mar 2026 — Ch 2: Households & Businesses","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-australian-households-and-businesses.html"]]},
 
 {id:"housing", label:"Residential property market", size:"The system's collateral", tier:"real", x:590, y:650,
+ amp:{k:"cond", note:"Collateral stabilises bank losses while prices hold; procyclical if they fall far."},
  desc:"The collateral under the majority of bank lending. Strong prices have kept realised bank losses near zero — which is both the system's strength and its concentrated bet.",
  facts:[
   "Rising prices have let severely stressed borrowers <b>sell to repay in full</b> — disruptive for the household, loss-free for the bank.",
@@ -393,7 +424,8 @@ const NODES = [
  dq:{l:1, note:"Prices, LVRs and arrears are well measured. Under-insured and climate-exposed collateral is the emerging blind spot (APRA Climate Vulnerability Assessment due mid-2026)."},
  src:[["RBA FSR Mar 2026 — Ch 2 & Ch 3","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"],["ASIC REP 814 (real-estate concentration)","https://asic.gov.au/regulatory-resources/find-a-document/reports/rep-814-private-credit-in-australia/"]]},
 
-{id:"businesses", label:"Businesses & CRE", size:"Incl. construction & development", tier:"real", x:880, y:650,
+{id:"businesses", label:"Businesses & CRE", size:"Construction & development", tier:"real", x:880, y:650,
+ amp:{k:"expo", note:"Mostly a destination and conduit for stress; construction and CRE is the concentrated corner."},
  desc:"The corporate and commercial real estate sector — where bank, non-bank and private credit lending all converge, and where insolvencies are already elevated in construction and hospitality.",
  facts:[
   "Company insolvencies have stabilised around long-run averages, but remain <b>elevated in construction and hospitality</b>, mostly small firms with little debt.",
@@ -413,6 +445,7 @@ const NODES = [
 */
 const EDGES = [
 {id:"e-super-banks", a:"super", b:"major-banks", kind:"funding", dir:"ab", w:4,
+ amp:{k:"cond", note:"Normally a stable, long-horizon funding base: steady inflows, unleveraged, no run incentive. It flips to amplifier only if funds must raise cash at scale in a market-wide liquidity event — the RBA’s precise, narrow concern."},
  label:"Bank funding: deposits, bills, bonds, equity",
  detail:"Super funds are concentrated holders of every layer of bank funding — deposits, bank bills, bank bonds and bank equity. This is the single most important domestic interconnection the RBA identifies.",
  stress:"Stress flows super → banks: if funds redeem bank bills and deposits at scale to raise cash, BBSW spikes, short-term bank funding shrinks, and — because much of banks' wholesale and deposit pricing references BBSW — the whole funding stack reprices. Observed at COVID-19 onset. APRA's system stress test confirmed bank liquidity stress could arise this way.",
@@ -420,6 +453,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Ch 3 (Box: Interconnections)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"],["RBA FSR Mar 2026 — Ch 3 (system stress test)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-super-globassets", a:"super", b:"global-assets", kind:"invest", dir:"ba", w:4,
+ amp:{k:"cond", note:"Diversification plus defined-contribution design make this an absorber — losses land on member balances, not institutional solvency. The two-sided part: those losses are real household wealth, and retirees can crystallise them."},
  label:"36% of portfolio offshore",
  detail:"APRA-regulated funds hold 30% of assets in offshore listed equities and 6% in offshore fixed income (June 2025), a share that grows as the sector outgrows domestic markets.",
  stress:"Stress flows in from global markets: valuation losses pass straight to member balances (defined contribution). For members near or in retirement, losses can be crystallised — a household wealth channel more than an institutional solvency one.",
@@ -427,6 +461,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Focus Topic 4.1","https://www.rba.gov.au/publications/fsr/2025/oct/focus-topic-how-overseas-shocks-can-affect-financial-stability-in-australia.html"]]},
 
 {id:"e-super-fx", a:"super", b:"global-funding", kind:"funding", dir:"ba", w:3,
+ amp:{k:"amp", note:"Protective in purpose (shields members from currency swings) but mechanically procyclical: a falling AUD creates hard cash demands exactly when liquidity is scarcest."},
  label:"FX hedges → AUD cash calls",
  detail:"Funds hedge ~22% of offshore listed equities (more on fixed income). Hedging protects members from currency swings — but creates a hard cash demand when the AUD falls sharply, to roll out-of-the-money hedges or meet margin.",
  stress:"An AUD depreciation — the classic crisis pattern — forces super to find AUD liquidity exactly when markets are stressed. Most hedges avoid margin and maturities are staggered, but the RBA flags this as a growing structural pressure point as offshore (and fixed income) allocations rise.",
@@ -434,6 +469,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Focus Topic 4.1","https://www.rba.gov.au/publications/fsr/2025/oct/focus-topic-how-overseas-shocks-can-affect-financial-stability-in-australia.html"],["Hauser (Sep 2025): FX hedging speech","https://www.rba.gov.au/speeches/2025/sp-dg-2025-09-16.html"]]},
 
 {id:"e-super-mf", a:"super", b:"managed-funds", kind:"invest", dir:"both", w:2,
+ amp:{k:"cond", note:"Delegation is neutral day-to-day; in stress, similar mandates across funds can synchronise selling."},
  label:"Investment mandates",
  detail:"A significant share of super money is run by external managers, so super's market footprint partly appears as managed-fund activity.",
  stress:"Mandate chains can synchronise selling: if many funds instruct similar managers similarly, portfolio adjustments become correlated — amplifying common-exposure dynamics.",
@@ -441,6 +477,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Ch 3 (Box: Interconnections)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-super-pc", a:"super", b:"private-credit", kind:"invest", dir:"ba", w:2,
+ amp:{k:"expo", note:"A loss-transmission conduit: private credit losses land on member balances. Unleveraged holders, so no forced-selling mechanics — but valuation opacity delays recognition."},
  label:"Unlisted allocations",
  detail:"Super is a key driver of private credit growth — seeking yield and diversification through unlisted credit funds, domestic and offshore.",
  stress:"Losses flow private credit → super members. The deeper risk is informational: stale valuations can overstate balances and distort member switching; APRA has made unlisted asset valuation (private credit a priority) a supervision focus since 2024.",
@@ -448,6 +485,7 @@ const EDGES = [
  src:[["ASIC REP 814","https://asic.gov.au/regulatory-resources/find-a-document/reports/rep-814-private-credit-in-australia/"],["RBA Bulletin Oct 2024: Growth in Global Private Credit","https://www.rba.gov.au/publications/bulletin/2024/oct/growth-in-global-private-credit.html"]]},
 
 {id:"e-smsf-pc", a:"smsf", b:"private-credit", kind:"invest", dir:"ba", w:2,
+ amp:{k:"expo", note:"A loss conduit into retail retirement savings: no leverage or run dynamics, but concentrated and unprotected."},
  label:"Retail & SMSF money",
  detail:"SMSFs and 'sophisticated' investors have been significant buyers of higher-yielding private credit funds, particularly real-estate construction and development credit.",
  stress:"ASIC flags this as the segment where a private credit downturn lands hardest: concentrated, less diversified portfolios, weaker disclosure, no prudential supervision — retirement savings directly exposed.",
@@ -455,6 +493,7 @@ const EDGES = [
  src:[["ASIC REP 814","https://asic.gov.au/regulatory-resources/find-a-document/reports/rep-814-private-credit-in-australia/"]]},
 
 {id:"e-banks-pc", a:"major-banks", b:"private-credit", kind:"credit", dir:"ba", w:2,
+ amp:{k:"expo", note:"Plain credit exposure — transmits losses if defaults bite; small against bank capital."},
  label:"Warehouse & fund lines (~$12bn local)",
  detail:"Banks lend to private credit funds via warehouse facilities, subscription finance and fund-level lines — RBA-commissioned analysis puts domestic exposure at up to ~$12bn.",
  stress:"Private credit losses can reach bank balance sheets through these lines — small relative to bank capital, but the estimate itself is uncertain, and global experience (e.g. US bank losses on NBFI lending) shows the channel is real.",
@@ -462,6 +501,7 @@ const EDGES = [
  src:[["MPA summary of RBA-commissioned analysis (Mar 2026)","https://www.mpamag.com/au/specialty/alternative-lending/rba-worries-default-risk-rising-in-private-credit-but-industry-welcomes-scrutiny/582102"],["RBA FSR Mar 2026 — Ch 3","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-banks-globnbfi", a:"major-banks", b:"global-nbfi", kind:"credit", dir:"ba", w:2,
+ amp:{k:"expo", note:"A credit-exposure conduit; scale (~3% of assets) limits its amplification potential."},
  label:"Offshore NBFI lending (~$162bn incl.)",
  detail:"Including offshore non-bank lending exposures, Australian banks' exposure to the global non-bank lender complex is estimated at ~$162bn — about 3% of banking system assets.",
  stress:"A global private credit downturn transmits to Australian banks through these exposures and through counterparty channels — manageable at 3% of assets, but concentrated positions within it are not publicly visible.",
@@ -469,6 +509,7 @@ const EDGES = [
  src:[["MPA summary of RBA-commissioned analysis (Mar 2026)","https://www.mpamag.com/au/specialty/alternative-lending/rba-worries-default-risk-rising-in-private-credit-but-industry-welcomes-scrutiny/582102"],["FSB (May 2026): Vulnerabilities in Private Credit","https://www.fsb.org/2026/05/fsb-warns-on-private-credit-vulnerabilities/"]]},
 
 {id:"e-banks-globfund", a:"major-banks", b:"global-funding", kind:"funding", dir:"ba", w:3,
+ amp:{k:"cond", note:"Post-GFC restructuring turned a funding cliff into a cost channel: reduced, hedged, long-tenor. Repricing risk remains in a sustained global shock."},
  label:"Offshore wholesale funding (~10%)",
  detail:"Just over 10% of banks' debt funding is raised offshore (was ~25% pre-GFC); ~45% of it short-term, FX-hedged, average offshore bond maturity >4 years.",
  stress:"A global risk-off raises rollover costs and can close markets temporarily. Post-GFC restructuring means this is now a cost channel more than a cliff — but a severe, sustained shutoff would still bite, and one-third foreign ownership of banks' domestic securities adds a parallel selling channel.",
@@ -476,6 +517,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Focus Topic 4.1","https://www.rba.gov.au/publications/fsr/2025/oct/focus-topic-how-overseas-shocks-can-affect-financial-stability-in-australia.html"]]},
 
 {id:"e-banks-ags", a:"major-banks", b:"ags-market", kind:"market", dir:"both", w:3,
+ amp:{k:"cond", note:"HQLA is each bank’s shock absorber — but concentrated holdings of semis mean simultaneous monetisation could amplify. The RBA’s full-allotment OMO exists to break exactly that loop."},
  label:"HQLA & collateral: >½ of semis",
  detail:"Government bonds are the banks' liquidity buffer and the system's collateral. Banks hold more than half of all semi-government bonds outstanding — high concentration in the exact asset they'd all sell in stress.",
  stress:"Two-way: a sovereign repricing marks down bank liquidity buffers; simultaneous bank selling of semis into a thin market amplifies the repricing. The RBA's full-allotment OMO exists largely to break this loop.",
@@ -483,6 +525,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Ch 3 (Box: Interconnections)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-mlh-banks", a:"mlh-banks", b:"major-banks", kind:"funding", dir:"both", w:2,
+ amp:{k:"amp", note:"A designed-in loop: one bank’s fire sale marks down its peers’ liquidity buffers simultaneously. Being deliberately worked down by APRA."},
  label:"Bank paper held as liquid assets",
  detail:"Smaller MLH banks hold larger banks' (and each other's) debt securities as liquid assets — one bank's funding instrument is another's liquidity buffer.",
  stress:"In a fire sale, selling bank paper marks down every other MLH bank's buffer simultaneously — a designed-in contagion loop APRA is actively working down through diversification requirements.",
@@ -490,6 +533,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Ch 3 (liquidity)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-hf-ags", a:"hedge-funds", b:"ags-market", kind:"market", dir:"ab", w:2,
+ amp:{k:"amp", note:"Adds liquidity in calm, consumes it in stress: leveraged, fast, commonly positioned — the classic amplification profile (LTCM 1998; March 2020 and April 2025 in the AGS market)."},
  label:"Leveraged AGS positions",
  detail:"Hedge funds — largely offshore — run leveraged relative-value and basis-trade style positions in Australian government bonds.",
  stress:"In volatility spikes they unwind fast and together: April 2025 saw AGS liquidity deteriorate sharply as common positions were cut. Normally a liquidity provider, in stress a liquidity consumer.",
@@ -497,6 +541,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Ch 3 (Box: Interconnections; Box: April volatility)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-globfund-hf", a:"global-funding", b:"hedge-funds", kind:"funding", dir:"ab", w:1,
+ amp:{k:"amp", note:"Leverage withdrawal is procyclical: funding is pulled exactly when positions are losing, forcing sales into falling markets."},
  label:"Prime brokerage leverage",
  detail:"Hedge funds' leverage in AUD markets is financed by global banks through prime brokerage and repo.",
  stress:"When global funding tightens, leverage is withdrawn and positions must be cut — importing global deleveraging directly into Australian bond markets.",
@@ -504,6 +549,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Ch 3","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-banks-hh", a:"major-banks", b:"households", kind:"credit", dir:"both", w:4,
+ amp:{k:"cond", note:"High household debt is the system’s main structural exposure, but buffers, full-recourse lending and prudent standards keep it loss-remote unless unemployment and house prices move together."},
  label:"Mortgages — the core exposure",
  detail:"Housing lending dominates Australian bank balance sheets. High-LVR first home buyer lending has risen since the expanded 5% Deposit Scheme (Oct 2025), with the government guaranteeing up to 15% of property value for participants.",
  stress:"Two-way: household stress becomes bank credit losses only when arrears meet falling collateral values; bank tightening becomes household stress via credit availability. The RBA judges households unlikely to be the source of systemic instability — but they are the amplifier for any large income shock.",
@@ -511,6 +557,7 @@ const EDGES = [
  src:[["RBA FSR Mar 2026 — Ch 2","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-australian-households-and-businesses.html"]]},
 
 {id:"e-banks-biz", a:"major-banks", b:"businesses", kind:"credit", dir:"both", w:3,
+ amp:{k:"expo", note:"A standard credit conduit; competitive easing of standards is the thing to watch, not the channel itself."},
  label:"Business & CRE lending",
  detail:"Strong growth and competition in business lending — among banks, and against non-banks and private credit — with measures of business and CRE lending standards easing slightly.",
  stress:"Business failures feed bank losses (45–50% of business NPLs not well secured); competitive easing of standards today is the classic mechanism for tomorrow's losses. RBA judges it 'incremental and prudent' — so far.",
@@ -518,6 +565,7 @@ const EDGES = [
  src:[["RBA FSR Mar 2026 — Ch 3","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-nbl-hh", a:"nonbank-lenders", b:"households", kind:"credit", dir:"both", w:2,
+ amp:{k:"expo", note:"A small conduit; the fragility sits in its securitisation funding, not in amplification."},
  label:"Non-bank mortgages",
  detail:"Securitisation-funded non-bank lenders write housing loans at the margin of the banking system, often to borrowers outside bank risk appetite.",
  stress:"Arrears just under 1% — slightly above banks. Funding is the fragility: securitisation markets can close quickly in stress, halting new lending.",
@@ -525,6 +573,7 @@ const EDGES = [
  src:[["RBA FSR Mar 2026 — Ch 3","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-nbl-biz", a:"nonbank-lenders", b:"businesses", kind:"credit", dir:"both", w:2,
+ amp:{k:"expo", note:"A conduit with poor visibility — risk here is discovered late rather than amplified."},
  label:"Non-bank business & developer lending",
  detail:"Non-banks lend to businesses and property developers, with liaison reporting modestly easier terms (presales, collateral) than banks.",
  stress:"Poorly visible loan performance means deterioration would likely be discovered late; developer-heavy books link this channel tightly to construction and housing supply.",
@@ -532,6 +581,7 @@ const EDGES = [
  src:[["RBA FSR Mar 2026 — Ch 3","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-pc-biz", a:"private-credit", b:"businesses", kind:"credit", dir:"both", w:3,
+ amp:{k:"amp", note:"In a downturn this channel can amplify: stale valuations delay loss recognition, then credit to developers stops abruptly — a boom-bust lending cycle in the least visible corner of the system."},
  label:"Direct loans — ~half RE/construction",
  detail:"Private credit's core activity: direct loans to mid-market companies and, in Australia distinctively, to real-estate construction and development — roughly half the sector.",
  stress:"Defaults are rising and expected to keep rising through 2026 (RBA). Concentrated developer books + stale valuations + redemption-gated funds = losses that surface late and land on super, SMSF and retail investors.",
@@ -539,6 +589,7 @@ const EDGES = [
  src:[["ASIC REP 814","https://asic.gov.au/regulatory-resources/find-a-document/reports/rep-814-private-credit-in-australia/"],["RBA FSR Mar 2026 — Ch 3","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-hh-housing", a:"households", b:"housing", kind:"market", dir:"both", w:3,
+ amp:{k:"cond", note:"Wealth effects cut both ways: rising prices absorbed household stress for years; falling prices squeeze consumption and crystallise losses."},
  label:"Ownership & wealth",
  detail:"Housing is most households' largest asset and largest debt; price moves drive wealth, confidence and consumption.",
  stress:"Falling prices squeeze consumption and mobility; forced sales into weak markets crystallise losses. Rising prices have so far been the system's great absorber — letting stressed borrowers exit whole.",
@@ -546,6 +597,7 @@ const EDGES = [
  src:[["RBA FSR Mar 2026 — Ch 2","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-australian-households-and-businesses.html"]]},
 
 {id:"e-housing-banks", a:"housing", b:"major-banks", kind:"market", dir:"ab", w:3,
+ amp:{k:"cond", note:"Collateral is why bank losses sit near zero — a stabiliser that turns procyclical if prices fall far enough (forced sales → lower prices → more losses)."},
  label:"Collateral values",
  detail:"Property collateral is why Australian bank loan losses stay near zero even when arrears rise: over 90% of housing NPLs are well secured at current prices.",
  stress:"The whole banking system's loss profile is one housing-price scenario away from changing. Significant price falls would convert existing arrears into actual losses and tighten credit system-wide.",
@@ -553,6 +605,7 @@ const EDGES = [
  src:[["RBA FSR Mar 2026 — Ch 3","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-ins-hh", a:"insurers", b:"households", kind:"credit", dir:"ab", w:2,
+ amp:{k:"cond", note:"Insurance is a pure stabiliser where it is present; the risk is its quiet erosion through unaffordability and underinsurance."},
  label:"Home insurance & protection",
  detail:"Insurance is what makes a mortgaged home resilient collateral. Affordability is deteriorating with climate risk: ~4% of households uninsured, ~7% underinsured.",
  stress:"Underinsurance transfers disaster losses to households (and ultimately mortgage books). A slow-burn channel that compounds with every premium cycle.",
@@ -560,6 +613,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Ch 3 (underinsurance)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-ins-banks", a:"insurers", b:"major-banks", kind:"credit", dir:"ab", w:1,
+ amp:{k:"cond", note:"Coverage stabilises bank losses; the gaps surface all at once in disasters."},
  label:"LMI & collateral protection",
  detail:"Lenders mortgage insurance covers banks on low-deposit loans (though the expanded 5% Deposit Scheme substitutes a government guarantee for LMI in scheme loans); property insurance protects collateral quality.",
  stress:"Insurance failures or coverage gaps surface as bank credit losses in disasters. LMI is also a concentrated industry — few providers backing a large tail risk.",
@@ -567,6 +621,7 @@ const EDGES = [
  src:[["RBA FSR Mar 2026 — Ch 2 & Ch 3","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-australian-households-and-businesses.html"]]},
 
 {id:"e-ins-dm", a:"insurers", b:"dom-markets", kind:"invest", dir:"both", w:1,
+ amp:{k:"expo", note:"A common-exposure conduit between holder classes."},
  label:"Corporate bond overweight",
  detail:"Insurers hold corporate bonds heavily (relative to size) to match policy liabilities — sharing a common exposure with super and managed funds.",
  stress:"Fire sales by one holder class mark down the others: the RBA notes this 'indirectly exposes insurers to super funds (and vice versa)'.",
@@ -574,6 +629,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Ch 3 (Box: Interconnections)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-mf-dm", a:"managed-funds", b:"dom-markets", kind:"invest", dir:"both", w:2,
+ amp:{k:"cond", note:"Buy-and-hold concentration stabilises in calm; redemption-driven selling amplifies in stress."},
  label:"Concentrated holdings",
  detail:"Managed funds are, with super, the largest domestic holders of bank bills, corporate bonds and listed equities.",
  stress:"Investor redemptions force selling into the same concentrated markets — the indirect contagion backbone.",
@@ -581,6 +637,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Ch 3 (Box: Interconnections)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-globassets-dm", a:"global-assets", b:"dom-markets", kind:"market", dir:"ab", w:2,
+ amp:{k:"amp", note:"Foreign selling into domestic markets amplifies global stress locally, regardless of Australian fundamentals."},
  label:"Foreign ownership ≈ ⅓",
  detail:"Foreign investors own about one-third of domestically issued bank and corporate equities and bonds.",
  stress:"Global risk aversion → foreign selling of Australian securities → domestic prices and funding costs, regardless of domestic fundamentals.",
@@ -588,6 +645,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Focus Topic 4.1","https://www.rba.gov.au/publications/fsr/2025/oct/focus-topic-how-overseas-shocks-can-affect-financial-stability-in-australia.html"]]},
 
 {id:"e-globassets-ags", a:"global-assets", b:"ags-market", kind:"market", dir:"ab", w:2,
+ amp:{k:"amp", note:"A sovereign repricing moves the ‘risk-free’ anchor itself — repricing collateral, liquidity buffers and funding costs across the whole system at once."},
  label:"Sovereign repricing spillover",
  detail:"The RBA's top-listed global risk: disorderly repricing of advanced-economy sovereign debt spilling into Australian bond markets.",
  stress:"Higher global term premia lift AGS/semis yields directly — marking down bank HQLA, raising government and bank funding costs, and tightening the collateral base under the whole system.",
@@ -595,6 +653,7 @@ const EDGES = [
  src:[["RBA FSR Mar 2026 — Financial Stability Assessment","https://www.rba.gov.au/publications/fsr/2026/mar/financial-stability-assessment.html"]]},
 
 {id:"e-china-biz", a:"china-trade", b:"businesses", kind:"market", dir:"ab", w:2,
+ amp:{k:"expo", note:"An income and demand conduit; exporter buffers and low bank exposure limit amplification inside the financial system."},
  label:"Export demand & commodity prices",
  detail:"A China/trade shock hits exporter revenues — mining above all, plus agriculture, manufacturing and their wholesalers and suppliers.",
  stress:"Cash-flow stress spreads through supply chains and employment. Direct bank exposure is small (mining <3% of business credit) and exporters hold buffers — the RBA judges immediate financial-stability risk modest, with the real damage running through incomes over time.",
@@ -602,6 +661,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Focus Topic 4.1 (trade channel)","https://www.rba.gov.au/publications/fsr/2025/oct/focus-topic-how-overseas-shocks-can-affect-financial-stability-in-australia.html"]]},
 
 {id:"e-china-globassets", a:"china-trade", b:"global-assets", kind:"market", dir:"ab", w:1,
+ amp:{k:"expo", note:"A transmission path for sentiment and commodity repricing rather than an amplifier in itself."},
  label:"Commodity & sentiment spillovers",
  detail:"Chinese financial system stress transmits globally through commodity prices, risk sentiment and capital flows before it touches Australia directly.",
  stress:"For Australia the market channel usually arrives first: AUD depreciation, equity falls, wider credit spreads — hitting super portfolios and funding markets ahead of any trade data.",
@@ -609,6 +669,7 @@ const EDGES = [
  src:[["RBA FSR Mar 2026 — Ch 1","https://www.rba.gov.au/publications/fsr/2026/mar/the-global-macro-financial-environment.html"]]},
 
 {id:"e-globfund-biz", a:"global-funding", b:"businesses", kind:"funding", dir:"ab", w:2,
+ amp:{k:"cond", note:"Long tenors and domestic alternatives damp the shock; the cost channel remains."},
  label:"Offshore corporate bonds (~¼ of large business debt)",
  detail:"Large corporates issue most of their bonds offshore at ~9-year average tenor; the domestic bond market has deepened as a fallback, and banks could substitute.",
  stress:"A global shutoff raises refinancing costs but long tenors and alternatives blunt the cliff. Cost channel more than availability channel — unless the shock is extreme.",
@@ -616,6 +677,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Focus Topic 4.1","https://www.rba.gov.au/publications/fsr/2025/oct/focus-topic-how-overseas-shocks-can-affect-financial-stability-in-australia.html"]]},
 
 {id:"e-osp-banks", a:"offshore-providers", b:"major-banks", kind:"oper", dir:"ab", w:2,
+ amp:{k:"amp", note:"Shared critical dependencies convert one failure into many — the definition of amplification."},
  label:"Critical service dependency",
  detail:"Banks' critical operations run on chains of third-party providers — cloud, core banking, payments tech — many offshore and shared across the industry.",
  stress:"A provider outage or compromise hits multiple institutions simultaneously (CrowdStrike 2024 as template). Operational stress converts to financial stress if payments or settlement stall.",
@@ -623,6 +685,7 @@ const EDGES = [
  src:[["RBA FSR Mar 2026 — Ch 3 (operational risk)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-osp-super", a:"offshore-providers", b:"super", kind:"oper", dir:"ab", w:2,
+ amp:{k:"amp", note:"Shared administrators and providers mean one incident can hit several funds at once, and confidence effects can convert it into a liquidity event."},
  label:"Administrators & cyber surface",
  detail:"Super funds depend on a small number of administrators, custodians and tech providers for critical functions — some offshore, beyond the regulatory perimeter.",
  stress:"April 2025 credential stuffing attacks on large funds — during market volatility — is the live precedent. A severe incident could trigger member switching or withdrawals, converting an operational event into a liquidity one.",
@@ -630,6 +693,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Ch 3 (super cyber-attacks)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-osp-asx", a:"offshore-providers", b:"asx", kind:"oper", dir:"ab", w:1,
+ amp:{k:"amp", note:"A supply-chain failure at the infrastructure layer propagates instantly to everything that settles through it."},
  label:"Technology supply chain",
  detail:"Market infrastructure runs on complex, partly ageing technology with outsourced components and geopolitically exposed offshore services.",
  stress:"Geopolitical fragmentation threatens continuity of offshore services underpinning FMIs — a rising vulnerability in the RBA's assessment.",
@@ -637,6 +701,7 @@ const EDGES = [
  src:[["RBA FSR Mar 2026 — Ch 3 (FMIs)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-asx-banks", a:"asx", b:"major-banks", kind:"oper", dir:"both", w:2,
+ amp:{k:"amp", note:"CCPs concentrate risk by design; margin calls are procyclical liquidity drains; outages freeze settlement."},
  label:"Clearing participation & margin",
  detail:"Banks (and brokers) are clearing participants: they post margin to ASX's central counterparties and depend on CHESS settlement completing daily.",
  stress:"Two-way: an ASX outage freezes settlement and can force participants to liquidate assets to meet obligations elsewhere; in volatile markets, CCP margin calls drain participant liquidity precisely when it's scarce.",
@@ -644,6 +709,7 @@ const EDGES = [
  src:[["RBA FSR Mar 2026 — Ch 3 (ASX)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-asx-dm", a:"asx", b:"dom-markets", kind:"oper", dir:"ab", w:2,
+ amp:{k:"amp", note:"A single point of failure under the whole equity market — an outage during volatility amplifies rather than contains."},
  label:"Clears & settles these markets",
  detail:"Equity (and key derivative) markets function only while ASX clearing and settlement functions — a near-monopoly single point of failure.",
  stress:"The April 2025 near-miss showed the tail scenario: a CHESS failure during a volatility spike, when settlement volumes and margin flows peak. 'Adverse implications for financial stability' is the RBA's own counterfactual.",
@@ -651,6 +717,7 @@ const EDGES = [
  src:[["RBA FSR Oct 2025 — Ch 3 (FMIs)","https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-pay-banks", a:"payments", b:"major-banks", kind:"oper", dir:"both", w:2,
+ amp:{k:"amp", note:"An operational stall converts directly into liquidity stress: institutions awaiting funds must borrow or liquidate."},
  label:"Settlement plumbing",
  detail:"Every interbank obligation ultimately settles across RITS in ES balances; retail systems (NPP, cards, BECS) layer on top.",
  stress:"A payments outage delays incoming funds, forcing institutions to borrow or liquidate to meet outgoing obligations — the RBA's textbook example of operational stress becoming liquidity stress.",
@@ -658,6 +725,7 @@ const EDGES = [
  src:[["RBA FSR Mar 2026 — Ch 3 (FMIs)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-rba-pay", a:"rba", b:"payments", kind:"support", dir:"ab", w:1,
+ amp:{k:"stab", note:"Backstop infrastructure — with the honest caveat that the operator is also a single point of failure (27 January 2026)."},
  label:"Operates RITS",
  detail:"The RBA itself operates the core settlement system — backstop and single point of failure in one institution (27 Jan 2026 outage as reminder).",
  stress:"Stabilising in financial stress; but operationally, the RBA is inside the risk map, not outside it — it is modernising core technology and cyber controls in response.",
@@ -665,6 +733,7 @@ const EDGES = [
  src:[["RBA FSR Mar 2026 — Ch 3 (Box: operational resilience initiatives)","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html"]]},
 
 {id:"e-rba-banks", a:"rba", b:"major-banks", kind:"support", dir:"ab", w:2,
+ amp:{k:"stab", note:"The designed circuit-breaker: convert ‘must sell now’ into ‘can borrow against it’, forestalling fire sales."},
  label:"Full-allotment OMO & standing facility",
  detail:"Unlimited borrowing of settlement cash against eligible collateral, weekly, plus a destigmatised overnight standing facility.",
  stress:"The designed circuit-breaker: converts 'must sell assets now' into 'can borrow against them instead', forestalling fire sales. Worked with modest usage in April 2025. Reaches banks — not super or private credit funds directly.",
@@ -672,6 +741,7 @@ const EDGES = [
  src:[["Joint APRA-RBA Statement (Apr 2025)","https://www.rba.gov.au/media-releases/2025/mr-25-11.html"]]},
 
 {id:"e-biz-hh", a:"businesses", b:"households", kind:"market", dir:"ab", w:1,
+ amp:{k:"expo", note:"The slow real-economy conduit — unemployment. Not an amplifier itself; the danger is what it feeds (arrears meeting falling collateral)."},
  label:"Jobs & incomes",
  detail:"Business stress reaches households through employment and wages — the slowest but heaviest transmission channel in any real downturn.",
  stress:"This is how every 'contained' shock becomes systemic if it runs long enough: business failure → unemployment → mortgage arrears → collateral pressure → credit tightening.",
@@ -679,6 +749,7 @@ const EDGES = [
  src:[["RBA FSR Mar 2026 — Ch 2","https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-australian-households-and-businesses.html"]]},
 
 {id:"e-super-dm", a:"super", b:"dom-markets", kind:"invest", dir:"both", w:3,
+ amp:{k:"cond", note:"Historically countercyclical and stabilising. The RBA’s forward concern is scale: at $4.5tn+, even prudent liquidity-raising could move the markets it happens in — “manage their market presence with care”."},
  label:"Largest domestic holders",
  detail:"Super (with managed funds) owns rising shares of domestic bonds and listed equities — ownership concentration that grows mechanically as the sector compounds.",
  stress:"Countercyclical buying has historically stabilised these markets. The RBA's forward concern: at $4.5tn+ and growing, even prudent liquidity-raising by super is large relative to market depth — 'manage their market presence with care'.",
@@ -732,7 +803,7 @@ s4:{title:"China / trade shock", color:"#148EA1",
 /* ================= RENDERING & INTERACTION ================= */
 const SVGNS = "http://www.w3.org/2000/svg";
 const svg = document.getElementById("map");
-const NW = 170, NH = 58;
+const NW = 184, NH = 62;
 const GROUPCOL = {
   off:  {fill:"#E8EAF9", stroke:"#4356C0"},
   inv:  {fill:"#DFF0EF", stroke:"#0E7C7B"},
@@ -759,6 +830,8 @@ const KINDSTYLE = {
 };
 const DQCOL = {1:"#128A5A", 2:"#C98A00", 3:"#E8474B"};
 const DQLAB = {1:"Well measured", 2:"Partially visible", 3:"Poorly visible / estimate"};
+const AMPCOL = {stab:"#128A5A", cond:"#C98A00", amp:"#E8474B", expo:"#6E8A86"};
+const AMPLAB = {stab:"Stabiliser", cond:"Two-sided — can flip in severe stress", amp:"Amplifier under stress", expo:"Exposure conduit"};
 const TIERS = [
   {label:"OFFSHORE VECTORS", y:70}, {label:"ASSET OWNERS & INVESTORS", y:215},
   {label:"LENDERS & BACKSTOP", y:360}, {label:"MARKETS & INFRASTRUCTURE", y:505},
@@ -768,7 +841,7 @@ const TIERS = [
 const nodeById = {}; NODES.forEach(n=>{ nodeById[n.id]=n; n.g = NODEGROUP[n.id]||"lend"; n.lx=n.x; n.ly=n.y; });
 const edgeById = {}; EDGES.forEach(e=>{ edgeById[e.id]=e; });
 
-const state = { view:"layer", dq:false, sel:null, selType:null, scen:null, step:0, hiddenKinds:new Set(), playTimer:null };
+const state = { view:"layer", dq:false, amp:false, sel:null, selType:null, scen:null, step:0, hiddenKinds:new Set(), playTimer:null };
 
 /* ---------- defs & layers ---------- */
 const defs = document.createElementNS(SVGNS,"defs"); svg.appendChild(defs);
@@ -814,8 +887,14 @@ function wrapLabel(s, max){
   if(cur) lines.push(cur);
   return lines.slice(0,2);
 }
-function edgeColor(e){ return state.dq ? DQCOL[e.dq.l] : KINDSTYLE[e.kind].c; }
-function nodeStroke(n){ return state.dq ? DQCOL[n.dq.l] : GROUPCOL[n.g].stroke; }
+function fitText(el, max){
+  /* Safety net: if a label still overflows its box, compress it to fit exactly */
+  if(el.getComputedTextLength && el.getComputedTextLength() > max){
+    el.setAttribute("textLength", max); el.setAttribute("lengthAdjust","spacingAndGlyphs");
+  }
+}
+function edgeColor(e){ return state.amp ? AMPCOL[e.amp.k] : state.dq ? DQCOL[e.dq.l] : KINDSTYLE[e.kind].c; }
+function nodeStroke(n){ return state.amp ? AMPCOL[n.amp.k] : state.dq ? DQCOL[n.dq.l] : GROUPCOL[n.g].stroke; }
 
 /* ---------- build nodes ---------- */
 NODES.forEach(n=>{
@@ -837,6 +916,8 @@ NODES.forEach(n=>{
   const ttl = document.createElementNS(SVGNS,"title"); ttl.textContent = n.label + " — click for evidence"; g.appendChild(ttl);
   n._g = g; n._r = r; n._t1 = t1; n._t2 = t2; n._nl = lines.length;
   gNode.appendChild(g);
+  fitText(t2, NW-16);
+  if(t1.childNodes) Array.from(t1.childNodes).forEach(ts=>fitText(ts, NW-16));
   g.addEventListener("click", ev=>{ ev.stopPropagation(); select("node", n.id); });
   g.addEventListener("pointerenter", ()=>hover(n.id, true));
   g.addEventListener("pointerleave", ()=>hover(n.id, false));
@@ -1021,6 +1102,9 @@ const sidebar = document.getElementById("sidebar");
 function chips(dq){
   return `<span class="chip dq${dq.l}">● ${DQLAB[dq.l]}</span>`;
 }
+function ampChip(a){
+  return `<span class="chip amp-${a.k}">⇄ ${AMPLAB[a.k]}</span>`;
+}
 function srcList(src){
   return `<h3>Sources</h3><ul>` + src.map(s=>`<li><a href="${s[1]}" target="_blank" rel="noopener">${s[0]}</a></li>`).join("") + `</ul>`;
 }
@@ -1035,10 +1119,11 @@ function showOverview(){
     <li>Non-bank lenders: ~6% of system assets; <b>private credit under 2%</b> — small, fast-growing, and by far the worst-measured.</li>
     <li>The RBA's March 2026 headline: the core is resilient, the risk environment (global, operational, geopolitical) has deteriorated.</li>
   </ul>
-  <h3>Three ways to explore</h3>
+  <h3>Four ways to explore</h3>
   <ul>
     <li><b>Stress scenarios</b> (top bar) — step through how four canonical shocks propagate, node by node.</li>
     <li><b>What we can &amp; can't see</b> — recolours every element by data visibility: green (well measured) → amber (partial) → red (estimates and blind spots).</li>
+    <li><b>Stabiliser or amplifier?</b> — recolours every linkage by whether it damps stress or amplifies it, and when that can flip. A channel is not automatically a danger.</li>
     <li><b>Click any line</b> — e.g. super → banks, the single most important domestic linkage the RBA identifies.</li>
   </ul>
   <h3>Caveat</h3>
@@ -1048,11 +1133,12 @@ function showNode(n){
   const conns = EDGES.filter(e=>e.a===n.id||e.b===n.id);
   sidebar.innerHTML = glossify(`
   <h2>${n.label}</h2>
-  <div>${chips(n.dq)}<span class="chip">${n.size}</span></div>
+  <div>${chips(n.dq)}${ampChip(n.amp)}<span class="chip">${n.size}</span></div>
   <p>${n.desc}</p>
   <h3>What the evidence says</h3>
   <ul>${n.facts.map(f=>`<li>${f}</li>`).join("")}</ul>
   <div class="dqnote dq${n.dq.l}"><b>Data visibility:</b> ${n.dq.note}</div>
+  <div class="dqnote amp-${n.amp.k}"><b>Stability role:</b> ${n.amp.note}</div>
   <h3>Connections (${conns.length})</h3>
   ${conns.map(e=>{
     const other = e.a===n.id ? nodeById[e.b] : nodeById[e.a];
@@ -1066,12 +1152,13 @@ function showEdge(e){
   const dirTxt = e.dir==="both" ? `${a.label} ⇄ ${b.label}` : (e.dir==="ab" ? `${a.label} → ${b.label}` : `${b.label} → ${a.label}`);
   sidebar.innerHTML = glossify(`
   <h2>${e.label}</h2>
-  <div><span class="chip" style="border-color:${KINDSTYLE[e.kind].c};color:${KINDSTYLE[e.kind].c}">${KINDSTYLE[e.kind].name}</span>${chips(e.dq)}</div>
+  <div><span class="chip" style="border-color:${KINDSTYLE[e.kind].c};color:${KINDSTYLE[e.kind].c}">${KINDSTYLE[e.kind].name}</span>${chips(e.dq)}${ampChip(e.amp)}</div>
   <p><b>${dirTxt}</b> <span style="color:var(--muted)">(arrow = primary direction of stress)</span></p>
   <p>${e.detail}</p>
   <h3>How stress travels here</h3>
   <p>${e.stress}</p>
   <div class="dqnote dq${e.dq.l}"><b>Data visibility:</b> ${e.dq.note}</div>
+  <div class="dqnote amp-${e.amp.k}"><b>Stability role:</b> ${e.amp.note}</div>
   <span class="conn" data-sel="n:${e.a}">◼ ${a.label}</span>
   <span class="conn" data-sel="n:${e.b}">◼ ${b.label}</span>
   ${srcList(e.src)}`);
@@ -1102,6 +1189,24 @@ function showDQ(){
     <li><a href="https://www.cfr.gov.au/publications/policy-statements-and-other-reports/2025/cfr-initiatives-on-systemic-risks-and-vulnerabilities/" target="_blank" rel="noopener">CFR — Initiatives on Systemic Risks & Vulnerabilities (Dec 2025)</a></li>
   </ul>`);
 }
+function showAmp(){
+  sidebar.innerHTML = glossify(`
+  <h2>Stabiliser or amplifier?</h2>
+  <p>A line on this map is not automatically a danger. The same linkage can damp stress in one state of the world and transmit it in another. The map is now coloured by <b>stability role</b> — a judgement, distilled from RBA and APRA assessments, of which way each connection cuts. Open any element for the reasoning.</p>
+  <div class="dqnote amp-stab"><b style="color:#128A5A">Stabilisers.</b> Designed circuit-breakers: the RBA’s full-allotment liquidity operations and the settlement backstop.</div>
+  <div class="dqnote amp-cond"><b style="color:#C98A00">Two-sided.</b> Stabilising in normal times and most downturns — capable of amplifying only in severe, system-wide stress. Most of the super linkages live here, deliberately.</div>
+  <div class="dqnote amp-amp"><b style="color:#E8474B">Amplifiers under stress.</b> Leverage, fire-sale commons, shared operational dependencies, procyclical margin — mechanisms that make a bad day worse.</div>
+  <div class="dqnote amp-expo"><b style="color:#6E8A86">Exposure conduits.</b> Plain lending and investment links that transmit losses without inherently damping or amplifying them.</div>
+  <h3>The superannuation question</h3>
+  <p>Take the biggest example: super holds large stakes in bank equity, bonds, bills and deposits. Is that a vulnerability? <b>Mostly the opposite.</b> The RBA’s own assessment is that long-horizon, unleveraged, steadily funded super has historically <i>stabilised</i> markets — buying countercyclically through stress — and defined-contribution design means market losses cannot make a fund insolvent. The concern is narrower and newer: at $4.5tn and compounding, if funds ever needed to raise cash <i>at scale, all at once</i> — a severe liquidity event, FX-hedge cash calls, mass member switching — their sheer footprint could amplify the stress they were responding to. That is why the super–bank line shows amber (two-sided), not red. <span class="conn" data-sel="e:e-super-banks">Open the super → banks link</span></p>
+  <h3>The LTCM question</h3>
+  <p>Hedge funds sit on this map for the reason 1998 taught: leveraged, common positions that unwind fast. But note where their amplification runs in Australia — through <b>market functioning</b> (AGS liquidity, as in April 2025) and through <b>global dealer banks’</b> prime brokerage, not through large direct exposures of Australian banks. That judgement rests on partial data, which is why the same node shows red on the visibility overlay. <span class="conn" data-sel="n:hedge-funds">Open the hedge funds node</span></p>
+  <h3>Sources</h3>
+  <ul>
+    <li><a href="https://www.rba.gov.au/publications/fsr/2026/mar/resilience-of-the-australian-financial-system.html" target="_blank" rel="noopener">RBA FSR Mar 2026 — Ch 3 (superannuation as stabiliser and potential amplifier)</a></li>
+    <li><a href="https://www.rba.gov.au/publications/fsr/2025/oct/resilience-of-the-australian-financial-system.html" target="_blank" rel="noopener">RBA FSR Oct 2025 — Ch 3 (Box: Interconnections; hedge funds in AGS)</a></li>
+  </ul>`);
+}
 sidebar.addEventListener("click", ev=>{
   const el = ev.target.closest("[data-sel]");
   if(!el) return;
@@ -1119,23 +1224,37 @@ function select(type, id){
 svg.addEventListener("click", ()=>{
   if(state.scen) return;
   state.sel=null; state.selType=null; clearClasses();
-  if(state.dq) showDQ(); else showOverview();
+  if(state.amp) showAmp(); else if(state.dq) showDQ(); else showOverview();
 });
 
 /* ---------- data-quality overlay ---------- */
 const dqBtn = document.getElementById("dq-btn");
+const ampBtn = document.getElementById("amp-btn");
+function refreshIdlePanel(){
+  if(!state.sel && !state.scen){ state.amp ? showAmp() : state.dq ? showDQ() : showOverview(); }
+}
 dqBtn.addEventListener("click", ()=>{
   state.dq = !state.dq;
+  if(state.dq){ state.amp=false; ampBtn.classList.remove("on"); }
   dqBtn.classList.toggle("on", state.dq);
-  redraw(); applySelection(); buildLegend();
-  if(!state.sel && !state.scen){ state.dq ? showDQ() : showOverview(); }
+  redraw(); applySelection(); buildLegend(); refreshIdlePanel();
+});
+ampBtn.addEventListener("click", ()=>{
+  state.amp = !state.amp;
+  if(state.amp){ state.dq=false; dqBtn.classList.remove("on"); }
+  ampBtn.classList.toggle("on", state.amp);
+  redraw(); applySelection(); buildLegend(); refreshIdlePanel();
 });
 
 /* ---------- legend ---------- */
 const legend = document.getElementById("legend");
 function buildLegend(){
   let h="";
-  if(state.dq){
+  if(state.amp){
+    h += `<div class="ttl">Stability role</div>`;
+    ["stab","cond","amp","expo"].forEach(k=>{ h+=`<div class="row"><span class="sw" style="border-color:${AMPCOL[k]}"></span>${AMPLAB[k]}</div>`; });
+    h += `<div class="ttl" style="margin-top:6px">Judgements distilled from RBA/APRA assessments — open any element for the reasoning</div>`;
+  } else if(state.dq){
     h += `<div class="ttl">Data visibility</div>`;
     [1,2,3].forEach(l=>{ h+=`<div class="row"><span class="sw" style="border-color:${DQCOL[l]}"></span>${DQLAB[l]}</div>`; });
     h += `<div class="ttl" style="margin-top:6px">Based on RBA/ASIC/APRA statements about their own visibility</div>`;
@@ -1201,7 +1320,7 @@ function exitScenario(refresh=true){
   document.querySelectorAll(".scen").forEach(b=>b.classList.remove("on"));
   scenbox.style.display="none";
   clearClasses();
-  if(refresh){ state.dq ? showDQ() : showOverview(); }
+  if(refresh){ state.amp ? showAmp() : state.dq ? showDQ() : showOverview(); }
 }
 const PLAY_MS = 4000;
 function kickProgress(on){
@@ -1249,6 +1368,7 @@ document.getElementById("reset").addEventListener("click", ()=>{
   exitScenario(false); state.sel=null; state.selType=null;
   state.hiddenKinds.clear();
   if(state.dq){ state.dq=false; dqBtn.classList.remove("on"); }
+  if(state.amp){ state.amp=false; ampBtn.classList.remove("on"); }
   redraw(); clearClasses(); buildLegend(); showOverview();
 });
 
@@ -1278,3 +1398,4 @@ redraw(); buildLegend(); showOverview();
 </script>
 </body>
 </html>
+           
